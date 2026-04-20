@@ -118,7 +118,7 @@ export default function JobDetail() {
     '@context': 'https://schema.org/',
     '@type': 'JobPosting',
     title: job.job_title,
-    description: job.job_description,
+    description: job.job_description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim(),
     datePosted: publishedDate,
     validThrough: expiryDate,
     employmentType: job.job_type?.toUpperCase().replace(/\s+/g, '_') || 'FULL_TIME',
@@ -136,7 +136,7 @@ export default function JobDetail() {
           '@type': 'PostalAddress',
           addressLocality: job.city_id,
           addressRegion: job.state_id,
-          addressCountry: job.address_country_code || job.country_id,
+          addressCountry: (job as any).country_code || job.address_country_code || job.country_id,
         }
       },
     jobLocationType: job.work_setup === 'Remote' ? 'TELECOMMUTE' : undefined,
