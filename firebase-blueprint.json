@@ -1,0 +1,43 @@
+{
+  "entities": {
+    "Job": {
+      "title": "Job",
+      "description": "A job listing on the board",
+      "type": "object",
+      "properties": {
+        "job_title": { "type": "string" },
+        "company_name": { "type": "string" },
+        "job_description": { "type": "string" },
+        "job_type": { "type": "string", "enum": ["Full-time", "Part-time", "Contract", "Freelance"] },
+        "work_setup": { "type": "string", "enum": ["Remote", "Onsite", "Hybrid"] },
+        "seniority_level": { "type": "string", "enum": ["Entry", "Mid", "Senior", "Lead", "Manager"] },
+        "country_id": { "type": "string" },
+        "city_id": { "type": "string" },
+        "slug": { "type": "string" },
+        "is_active": { "type": "boolean" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["job_title", "company_name", "job_description", "country_id", "city_id", "slug", "is_active"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "A user with administrative privileges",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "editor"] }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/jobs/{jobId}": {
+      "schema": "Job",
+      "description": "Collection of all job listings"
+    },
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "Authenticated admins who can manage the board"
+    }
+  }
+}

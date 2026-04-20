@@ -1,0 +1,9 @@
+{
+  "name": "Python Job Board (JB)",
+  "description": "The definitive Python Job Board featuring daily listings from 50+ locations, curated interview questions, and a robust admin dashboard.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": []
+}

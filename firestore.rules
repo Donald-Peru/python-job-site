@@ -1,0 +1,79 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 3. Primitive Definition
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      // Identity check against admins collection
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 2. Validation Blueprints (Jobs)
+    function isValidJob(data) {
+      let requiredFields = ['job_title', 'company_name', 'job_description', 'country_id', 'city_id', 'slug', 'is_active', 'published_date', 'work_setup', 'seniority_level', 'salary_currency'];
+      return data.keys().hasAll(requiredFields)
+        && data.job_title is string && data.job_title.size() <= 200
+        && data.company_name is string && data.company_name.size() <= 200
+        && data.job_description is string && data.job_description.size() <= 100000
+        && data.slug is string && data.slug.size() <= 500
+        && data.country_id is string && data.country_id.size() <= 100
+        && data.city_id is string && data.city_id.size() <= 100
+        && data.is_active is bool
+        && data.work_setup in ['Remote', 'Onsite', 'Hybrid']
+        && data.seniority_level in ['Entry', 'Mid', 'Senior', 'Lead', 'Manager'];
+    }
+
+    // 4. Job Resource Match
+    match /jobs/{jobId} {
+      // Publicly viewable if active, and allow 'get' for direct links.
+      allow get: if true;
+      allow list: if resource.data.get('is_active', false) == true;
+      
+      allow create: if isAdmin() && isValidJob(incoming());
+      
+      allow update: if isAdmin() 
+        && isValidJob(incoming())
+        && (
+          // Action: Normal update (allow changing status, features, metadata)
+          incoming().diff(existing()).affectedKeys().hasAny(['is_active', 'job_title', 'job_description', 'is_featured', 'updated_at'])
+          || incoming().updated_at == request.time
+        );
+        
+      allow delete: if isAdmin();
+    }
+
+    // Admin Access Match
+    match /admins/{userId} {
+      // Users can only read their own admin doc to verify status
+      allow get: if isSignedIn() && request.auth.uid == userId;
+      // Writing to admins is restricted (must be via Firebase Console or special script)
+      allow write: if false;
+    }
+  }
+}

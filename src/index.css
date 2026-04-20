@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&family=Playfair+Display:ital,wght@0,900;1,900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, SFMono-Regular, monospace;
+  --font-serif: "Playfair Display", serif;
+  
+  --color-bg-main: #0a0a0a;
+  --color-bg-card: #0d0d0d;
+  --color-bg-deep: #050505;
+  --color-border-subtle: #222222;
+  --color-text-dim: #888888;
+  --color-text-main: #d1d1d1;
+  --color-accent-emerald: #10b981;
+  --color-accent-emerald-glow: rgba(16, 185, 129, 0.5);
+  --color-brand-blue: #4584b6;
+  --color-brand-yellow: #ffde57;
+  --color-brand-gray: #646464;
+  --color-bg-light: #f8fafc;
+  --color-bg-white: #ffffff;
+}
+
+@layer base {
+  body {
+    @apply font-sans antialiased bg-bg-light text-brand-gray selection:bg-brand-blue selection:text-white;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight text-brand-gray font-bold;
+  }
+}
+
+@layer components {
+  .terminal-grid {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 0.5px, transparent 0.5px);
+    background-size: 24px 24px;
+  }
+
+  .label-caps {
+    @apply text-[10px] uppercase tracking-[0.25em] font-bold text-text-dim;
+  }
+
+  .nav-link {
+    @apply text-[11px] uppercase tracking-[0.2em] font-medium text-text-dim hover:text-white transition-colors;
+  }
+
+  .nav-link-active {
+    @apply text-white border-b border-white pb-1;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-slate-200 rounded-full hover:bg-slate-300;
+  }
+}
+
